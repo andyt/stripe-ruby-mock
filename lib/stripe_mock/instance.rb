@@ -1,5 +1,8 @@
+require 'forwardable'
+
 module StripeMock
   class Instance
+    extend Forwardable
 
     include StripeMock::RequestHandlers::Helpers
     include StripeMock::RequestHandlers::ParamValidators
@@ -35,29 +38,15 @@ module StripeMock
     include StripeMock::RequestHandlers::Transfers
     include StripeMock::RequestHandlers::Tokens
 
-
-    attr_reader :accounts, :bank_tokens, :charges, :coupons, :customers, :disputes, :events,
-                :invoices, :invoice_items, :orders, :plans, :recipients, :transfers,
-                :subscriptions
+    def_delegators :@repository, :accounts, :bank_tokens, :card_tokens, :charges, :coupons, :customers, :disputes, :events,
+                   :invoices, :invoice_items, :orders, :plans, :recipients, :transfers, :subscriptions
 
     attr_accessor :error_queue, :debug
 
     def initialize
-      @accounts = {}
-      @bank_tokens = {}
-      @card_tokens = {}
-      @customers = {}
-      @charges = {}
-      @coupons = {}
-      @disputes = Data.mock_disputes(['dp_05RsQX2eZvKYlo2C0FRTGSSA','dp_15RsQX2eZvKYlo2C0ERTYUIA', 'dp_25RsQX2eZvKYlo2C0ZXCVBNM', 'dp_35RsQX2eZvKYlo2C0QAZXSWE', 'dp_45RsQX2eZvKYlo2C0EDCVFRT', 'dp_55RsQX2eZvKYlo2C0OIKLJUY', 'dp_65RsQX2eZvKYlo2C0ASDFGHJ', 'dp_75RsQX2eZvKYlo2C0EDCXSWQ', 'dp_85RsQX2eZvKYlo2C0UJMCDET', 'dp_95RsQX2eZvKYlo2C0EDFRYUI'])
-      @events = {}
-      @invoices = {}
-      @invoice_items = {}
-      @orders = {}
-      @plans = {}
-      @recipients = {}
-      @transfers = {}
-      @subscriptions = {}
+      @repository = Repository.new(
+        disputes: Data.mock_disputes(['dp_05RsQX2eZvKYlo2C0FRTGSSA','dp_15RsQX2eZvKYlo2C0ERTYUIA', 'dp_25RsQX2eZvKYlo2C0ZXCVBNM', 'dp_35RsQX2eZvKYlo2C0QAZXSWE', 'dp_45RsQX2eZvKYlo2C0EDCVFRT', 'dp_55RsQX2eZvKYlo2C0OIKLJUY', 'dp_65RsQX2eZvKYlo2C0ASDFGHJ', 'dp_75RsQX2eZvKYlo2C0EDCXSWQ', 'dp_85RsQX2eZvKYlo2C0UJMCDET', 'dp_95RsQX2eZvKYlo2C0EDFRYUI'])
+      )
 
       @debug = false
       @error_queue = ErrorQueue.new
@@ -102,7 +91,7 @@ module StripeMock
 
     def generate_webhook_event(event_data)
       event_data[:id] ||= new_id 'evt'
-      @events[ event_data[:id] ] = symbolize_names(event_data)
+      events[ event_data[:id] ] = symbolize_names(event_data)
     end
 
     private

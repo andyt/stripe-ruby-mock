@@ -10,6 +10,7 @@ require 'stripe_mock/error_queue'
 
 require 'stripe_mock/data'
 require 'stripe_mock/data/list'
+require 'stripe_mock/data/repository'
 
 require 'stripe_mock/errors/stripe_mock_error'
 require 'stripe_mock/errors/unsupported_request_error'
