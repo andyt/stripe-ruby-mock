@@ -25,10 +25,9 @@ module StripeMock
 
     def get_server_data(key)
       timeout_wrap {
-        # Massage the data make this behave the same as the local StripeMock.start
-        result = {}
-        @pipe.get_data(key).each {|k,v| result[k] = Stripe::Util.symbolize_names(v) }
-        result
+        data = Array(@pipe.get_data(key))
+
+        StripeMock::MemoryStore.new(key, data.map { |v| Stripe::Util.symbolize_names(v) })
       }
     end
 

@@ -14,7 +14,7 @@ module StripeMock
           assert_existence :recipient, recipient, recipients[recipient]
         end
 
-        _transfers = transfers.each_with_object([]) do |(_, transfer), array|
+        _transfers = transfers.each_with_object([]) do |transfer, array|
           if recipient
             array << transfer if transfer[:recipient] == recipient
           else

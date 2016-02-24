@@ -4,14 +4,14 @@ module StripeMock
 
       def generate_bank_token(bank_params)
         token = new_id 'btok'
-        bank_tokens[token] = Data.mock_bank_account bank_params
+        bank_tokens[token] = Data.mock_bank_account bank_params.merge(id: token)
         token
       end
 
       def generate_card_token(card_params)
         token = new_id 'tok'
         card_params[:id] = new_id 'cc'
-        card_tokens[token] = Data.mock_card symbolize_names(card_params)
+        card_tokens[token] = Data.mock_card symbolize_names(card_params).merge(id: token)
         token
       end
 

@@ -51,13 +51,14 @@ module StripeMock
         params[:offset] ||= 0
         params[:limit] ||= 10
 
-        clone = charges.clone
+        result =
+          if params[:customer]
+            charges.select { |v| v[:customer] == params[:customer] }
+          else
+            charges.values
+          end
 
-        if params[:customer]
-          clone.delete_if { |k,v| v[:customer] != params[:customer] }
-        end
-
-        Data.mock_list_object(clone.values, params)
+        Data.mock_list_object(result, params)
       end
 
       def get_charge(route, method_url, params, headers)

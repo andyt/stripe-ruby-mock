@@ -476,11 +476,7 @@ module StripeMock
     end
 
     def self.mock_disputes(ids=[])
-      disputes = {}
-      ids.each do |id|
-        disputes[id] = self.mock_dispute(id: id)
-      end
-      disputes
+      ids.map { |id| self.mock_dispute(id: id) }
     end
 
     def self.mock_dispute(params={})
