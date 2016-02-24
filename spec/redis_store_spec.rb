@@ -19,6 +19,8 @@ describe StripeMock::MemoryStore do
 
   before do
     allow(Redis).to receive(:new).and_return(MockRedis.new)
+
+    StripeMock::RedisStore.redis = nil
   end
 
   describe '.redis' do
@@ -47,6 +49,12 @@ describe StripeMock::MemoryStore do
   end
 
   describe '#[]' do
+    it 'uses the class level Redis client' do
+      expect(StripeMock::RedisStore).to receive(:redis).and_return(double('redis_client', get: nil, set: true))
+
+      store
+    end
+
     it 'finds an object by ID' do
       expect(store['ch_1']).to eq object
     end

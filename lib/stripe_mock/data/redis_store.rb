@@ -17,7 +17,7 @@ module StripeMock
 
     def initialize(type, data = nil)
       @type = type
-      @store = Redis.new
+      @store = self.class.redis
 
       Array(data).each { |obj| create(obj) }
     end
