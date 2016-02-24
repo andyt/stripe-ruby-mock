@@ -1,16 +1,37 @@
 require 'spec_helper'
 
-require 'stripe_mock/data/memory_store'
+require 'mock_redis'
+require 'stripe_mock/data/redis_store'
+
+# So we don't need Redis as a dependency.
+module Redis
+end
 
 describe StripeMock::MemoryStore do
   # def_delegators :@repository, :[], :[]=, :values, :keys, :delete, :size
   # def_delegators :values, :select, :each, :to_json
 
+  let(:store) { StripeMock::RedisStore.new('object', [object]) }
+
   let(:object) do
     { id: 'ch_1' }
   end
 
-  let(:store) { StripeMock::MemoryStore.new('object', [object]) }
+  before do
+    allow(Redis).to receive(:new).and_return(MockRedis.new)
+  end
+
+  describe '.redis' do
+    it 'returns Redis.new by default' do
+      expect(Redis).to receive(:new).and_return(:default_redis_client)
+      expect(StripeMock::RedisStore.redis).to eq :default_redis_client
+    end
+
+    it 'returns an assigned value' do
+      StripeMock::RedisStore.redis = :assigned_redis_client
+      expect(StripeMock::RedisStore.redis).to eq :assigned_redis_client
+    end
+  end
 
   describe '.new' do
     it 'accepts an array of initial data items' do

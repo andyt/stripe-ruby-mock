@@ -17,12 +17,12 @@ describe StripeMock do
 
   it "does not persist data between mock sessions" do
     StripeMock.start
-    StripeMock.instance.customers[:x] = 9
+    StripeMock.instance.customers['cu_1'] = { id: 'cu_1' }
 
     StripeMock.stop
     StripeMock.start
 
-    expect(StripeMock.instance.customers[:x]).to be_nil
+    expect(StripeMock.instance.customers['cu_1']).to be_nil
     expect(StripeMock.instance.customers.keys.length).to eq(0)
     StripeMock.stop
   end

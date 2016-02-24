@@ -7,45 +7,47 @@ module StripeMock
     extend ::Forwardable
     include ::Enumerable
 
-    # legacy API support via new API
-    alias_method :[], :find
-
-    # legacy API
-    def_delegators :@repository, :[], :[]=, :values, :keys, :delete, :size
+    def_delegators :@store, :values, :keys, :delete, :size
     def_delegators :values, :select, :each, :to_json
 
     def initialize(type, data = nil)
       @type = type
-      @repository = {}
+      @store = {}
 
       Array(data).each { |obj| create(obj) }
     end
 
-    def create(params)
-      fail "missing id: #{params.inspect}" unless params[:id]
-      fail "#{type} #{params[:id]} exists!" if find(params[:id])
+    def [](id)
+      find(id)
+    end
 
-      @repository[params[:id]] = params
+    def []=(_id, params)
+      create_or_update(params)
+    end
+
+    private
+
+    def id?(params)
+      fail "missing id: #{params.inspect}" unless params[:id]
     end
 
     def find(id)
-      @repository[id]
+      @store[id]
     end
 
-    # def []=(_key, params)
-    #   create(params)
-    # end
+    def create(params)
+      id?(params)
+      fail "#{type} #{params[:id]} exists!" if find(params[:id])
 
-    # def all
-    #   @repository.values
-    # end
+      @store[params[:id]] = params
+    end
 
-    # def update(id, params)
-    #   find(id).merge!(params)
-    # end
+    def create_or_update(params)
+      id?(params)
 
-    # def delete(id)
-    #   @repository.delete(id)
-    # end
+      existing = find(params[:id]) || {}
+
+      @store[params[:id]] = existing.merge(params)
+    end
   end
 end
